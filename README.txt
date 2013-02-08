@@ -1,0 +1,1 @@
+This project took the URL of an XML document containing mixed sport team information, parsed the XML file, and extracted the list of team items, displaying them in a table. The JavaScript program was embedded in the HTML file so that it can be used to show the HTML table from DOM tree.

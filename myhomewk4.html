@@ -1,0 +1,251 @@
+<html>
+<head>
+<title>hw4</title>
+<style type="text/css">
+	caption.fontstyle {
+		font-family:Georgia, "Times New Roman", Times, serif;
+		font-size:16px;
+		font-weight:bold;
+	}
+</style>
+<script language="javascript">
+	function submitUrl(){
+		var s=document.getElementsByName("urlAdd");
+		var urlAddress;
+		
+		if(s.item(0).value==''){
+			alert('Error: empty text box');			
+		}
+		else{
+			//alert(s.item(0).value);
+			urlAddress = s.item(0).value;
+			viewXML(urlAddress);
+		}		
+	}
+	
+	function handleErr(){
+		alert("Wrong URL! Please input again!");
+		return true;
+	}
+	
+	function viewXML(what){
+		if(document.implementation && document.implementation.createDocument){
+			var xmlDoc = document.implementation.createDocument("","doc",null);
+			xmlDoc.async = false;
+			onerror = handleErr;
+			loaded = xmlDoc.load(what);
+			if(!loaded){
+				alert("Error: Xml cannot be loaded!");
+			}
+			else{
+				xmlDoc.onload = generateHTML(xmlDoc);
+			}
+		}
+	}
+	
+	function generateHTML(xmlDoc){
+		ELEMENT_NODE = 1;
+		root = xmlDoc.DocumentElement;
+		html_text = "<html><head><title>XML Parse Result</title></head><bo"+"dy>";
+		var name, color, logo, championships, coach, arena, video, capName, capPosition, capGames, capImage;
+		var team, footBallImage, strikerName, strikerAge, strikerSquad, footManager, footStadium, footVideo;
+		
+		<!-- NBA Teams -->		
+		basketballTeam=xmlDoc.getElementsByTagName("basketball");
+		<!-- no NBA Teams -->
+		if (basketballTeam.length == 0){
+			html_text += "<table border width=748 height=100> <th align=center>NO BASKETBALL DATA IS PRESENT</th></table>";
+		}
+		else {
+			for (i=0; i<basketballTeam.length; i++){
+				basketballNodeList = basketballTeam.item(i).childNodes;
+				<!-- illigal: list length not equal to 17 -->
+				if (basketballNodeList.length!=17){
+					alert("Error in XML file");
+					return false;
+				}
+				else {
+					html_text += "<table border width=747 rules=rows style=\"border-right:none; border-left:none; border-top:none; font-family:\'Times New Roman\', Times, serif\">";
+					for (j=0; j<basketballNodeList.length; j++){
+						if(basketballNodeList.item(j).nodeType==ELEMENT_NODE){
+							if(basketballNodeList.item(j).nodeName == "Name"){
+								name = basketballNodeList.item(j).firstChild.nodeValue;
+							}
+							else if(basketballNodeList.item(j).nodeName == "Color"){
+								color = basketballNodeList.item(j).firstChild.nodeValue;
+							}
+							else if(basketballNodeList.item(j).nodeName == "Logo"){
+								logo = basketballNodeList.item(j).firstChild.nodeValue;
+							}
+							else if(basketballNodeList.item(j).nodeName == "Championships"){
+								championships = basketballNodeList.item(j).firstChild.nodeValue;
+							}
+							else if(basketballNodeList.item(j).nodeName == "Captain"){
+								captainInfo = basketballNodeList.item(j).childNodes;
+								<!-- illigal: list length not equal to 9 -->				
+								if (captainInfo.length!=9){
+									alert("Error in XML file");
+									return false;
+								}
+								else {
+									for (l=0; l<captainInfo.length; l++){
+										if(captainInfo.item(l).nodeType==ELEMENT_NODE){
+											if (captainInfo.item(l).nodeName == "Name"){
+												capName = captainInfo.item(l).firstChild.nodeValue;
+											}
+											else if (captainInfo.item(l).nodeName == "Position"){
+												capPosition = captainInfo.item(l).firstChild.nodeValue;
+											}
+											else if (captainInfo.item(l).nodeName == "Games"){
+												capGames = captainInfo.item(l).firstChild.nodeValue;
+											}
+											else if (captainInfo.item(l).nodeName == "Image"){
+												capImage = captainInfo.item(l).firstChild.nodeValue;
+											}
+											
+										}
+									}
+								}
+							}
+							else if(basketballNodeList.item(j).nodeName == "Coach"){
+								coach = basketballNodeList.item(j).firstChild.nodeValue;
+							}
+							else if(basketballNodeList.item(j).nodeName == "Arena"){
+								arena = basketballNodeList.item(j).firstChild.nodeValue;
+							}
+							else if(basketballNodeList.item(j).nodeName == "Video"){
+								video = basketballNodeList.item(j).firstChild.nodeValue;
+							}
+						}
+					}
+					if(i!=0){
+						html_text += "<hr width=754  align=left></hr><br />";
+					}
+					
+					html_text += "<tr><td>";
+					html_text += "<table border width=747 bordercolor =" + color + ">";
+					html_text += "<caption style=\"background-color";
+					
+					if (color == "Royal Blue"){
+						html_text += ":#2B60DE;";
+					}
+					else if (color == "Light Royal Blue"){
+						html_text += ":#306EFF;";
+					}
+					else {
+						html_text += ":" + color +";";
+					}
+					
+					html_text += "height:38px\"><b style=\"color: white; font-size:20px\">" + name + "</b></caption>";
+					html_text += "<tr><th width=83>Logo</th><th width=105>Championships</th><th width=379>Captain</th><th width=74>Coach</th><th width=73>Arena</th></tr>";
+					html_text += "<tr><td align=center><IMG SRC=" + logo + " width=80 height=80 BORDER =0></td><td align=center>"+ championships + "</td><td>";
+					html_text += "<table border bordercolor=" + color +"><tr><th width=68>Name</th><th width=90>Position</th>";
+					html_text += "<th width=47>Games</th><th width=136>Image</th></tr>";
+					html_text += "<tr><td height=218 align=center>" + capName + "</td><td align=center>" + capPosition + "</td><td align=center>" + capGames + "</td>";
+					html_text += "<td align=center><IMG SRC=" + capImage + "width=140 height=210 BORDER =0></td></tr></table></td>";	
+					html_text += "<td>" + coach + "</td><td>" + arena +"</td></tr>";
+					html_text += "<tr><th colspan=5><iframe title=YouTube video player class=youtube-player type=text/html width=730 height=450 src=" + video + "></iframe></th></tr>";	
+					html_text += "</table>";
+					html_text += "<br></br>";
+					html_text += "</td></tr>";
+				}
+				html_text += "</table>";
+			}	
+		}
+		
+		
+		<!-- Football Teams -->
+		footballTeam=xmlDoc.getElementsByTagName("football");
+		footballNodeList=footballTeam.length;
+		<!-- no NBA Teams -->
+		if (footballTeam.length == 0){
+			html_text += "<table border width=748 height=100> <th align=center>NO FOOTBALL DATA IS PRESENT</th></table>";
+		}	
+		else {
+			html_text += "<table border  rules=rows style=\"border-right:none; border-top:none; border-left:none\">";
+			for (i=0; i<footballTeam.length; i++){
+				footballNodeList = footballTeam.item(i).childNodes;
+				<!-- illigal: list length not equal to 17 -->
+				if (footballNodeList.length!=13){
+					alert("Error in XML file");
+					return false;
+				}
+				else {
+					for (j=0; j<footballNodeList.length; j++){
+						if(footballNodeList.item(j).nodeType==ELEMENT_NODE){
+							if(footballNodeList.item(j).nodeName == "Team"){
+								team = footballNodeList.item(j).firstChild.nodeValue;
+							}
+							else if(footballNodeList.item(j).nodeName == "Image"){
+								footBallImage = footballNodeList.item(j).firstChild.nodeValue;
+							}
+							else if(footballNodeList.item(j).nodeName == "Striker"){
+								StrikerInfo = footballNodeList.item(j).childNodes;
+								<!-- illigal: list length not equal to 9 -->				
+								if (StrikerInfo.length!=7){
+									alert("Error in XML file");
+									return false;
+								}
+								else {
+									for (l=0; l<StrikerInfo.length; l++){
+										if(StrikerInfo.item(l).nodeType==ELEMENT_NODE){
+											if (StrikerInfo.item(l).nodeName == "name"){
+												strikerName = StrikerInfo.item(l).firstChild.nodeValue;
+											}
+											else if (StrikerInfo.item(l).nodeName == "age"){
+												strikerAge = StrikerInfo.item(l).firstChild.nodeValue;
+											}
+											else if (StrikerInfo.item(l).nodeName == "squadnum"){
+												strikerSquad = StrikerInfo.item(l).firstChild.nodeValue;
+											}		
+										}
+									}
+								}
+							}
+							else if(footballNodeList.item(j).nodeName == "Manager"){
+								footManager = footballNodeList.item(j).firstChild.nodeValue;
+							}
+							else if(footballNodeList.item(j).nodeName == "Stadium"){
+								footStadium = footballNodeList.item(j).firstChild.nodeValue;
+							}
+							else if(footballNodeList.item(j).nodeName == "video"){
+								footVideo = footballNodeList.item(j).firstChild.nodeValue;
+							}
+						}
+					}
+					html_text += "<tr><td>";
+					html_text += "<table bgcolor=\"#FF0000\" border bordercolor=white width=748 style=\"font-family:\'Times New Roman\', Times, serif\">";
+					html_text += "<caption style=\"height:38px; background:#FFFFFF\"><b style=\"color:red; font-size:20px\">"+ team +"</b></caption>";
+					html_text += "<tr style=\"background:#F00\"><th width=100>Image</th><th width=311>Striker</th><th width=104>Manager</th><th width=100>Stadium</th></tr>";
+					html_text += "<tr><td align=center><IMG SRC="+footBallImage +" width=80 height=80 BORDER =1 style=\"border-color:#610000\"></td>";
+					html_text += "<td><table border bordercolor= black align=center>";
+					html_text += "<tr><th width=65>name</th>";
+					html_text += "<th width=90 align=center>age</th>";
+					html_text += "<th width=100 align=center>squadnum</th></tr>";
+					html_text += "<tr><td height=100 align=center>" + strikerName + "</td>";
+					html_text += "<td align=center>" + strikerAge + "</td><td align=center>" + strikerSquad +"</td></tr></table></td>";
+					html_text += "<td align=center>" + footManager + "</td><td align=center>" + footStadium + "</td></tr>";
+					html_text += "<tr><th colspan=4><iframe title=YouTube video player class=youtube-player type=text/html width=730 height=450 src=" +footVideo + "></iframe></th> </tr>"
+					html_text += "</td></tr></table>";
+					html_text += "</td></tr>";
+				}
+			}
+			html_text += "</table>";
+		}
+		
+		html_text += "</bo"+"dy></html>";
+		hWin = window.open("","Assignment4","height = 1000, width = 800, scrollbars = yes");
+		hWin.document.write(html_text);
+	}
+</script>
+</head>
+<body>
+<h1 align="center"> Enter XML File </h1>
+<h2 align="center"><form>
+<input type="text" name="urlAdd" size="50" align="middle"/>
+<br /><br />
+<input type="button" value="Submit Query" align="middle" onclick="submitUrl()"/>
+</form>
+</h2>
+<noscript></body>
+</html>
